@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Website bán sơ mi rơ moóc
 
-## Getting Started
+Next.js 16 (App Router) + TypeScript + Tailwind CSS v4.
 
-First, run the development server:
+## Chạy dự án
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # http://localhost:3000
+npm run build   # build production
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Cấu trúc
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+src/
+  app/
+    page.tsx                 Trang chủ
+    san-pham/page.tsx        Danh sách xe (lọc theo ?danh-muc, sắp xếp theo ?sap-xep)
+    san-pham/[slug]/page.tsx Chi tiết xe (SSG qua generateStaticParams)
+    dich-vu/page.tsx         Dịch vụ
+    gioi-thieu/page.tsx      Giới thiệu
+    lien-he/                 Form báo giá (Server Action trong actions.ts)
+    not-found.tsx            Trang 404
+  components/                Header, Footer, ProductCard, TrailerImage
+  data/
+    catalog.ts               Danh mục + danh sách xe (nguồn dữ liệu duy nhất)
+    site.ts                  Tên công ty, hotline, địa chỉ, menu
+  lib/                       Kiểu dữ liệu và hàm định dạng giá VNĐ
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Việc cần làm tiếp
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Thông tin công ty**: sửa [src/data/site.ts](src/data/site.ts) — hiện đang là dữ liệu mẫu (tên, hotline, địa chỉ, MST).
+- **Sản phẩm**: sửa [src/data/catalog.ts](src/data/catalog.ts). Giá và thông số hiện là dữ liệu mẫu, cần thay bằng số liệu thật.
+- **Ảnh xe**: [src/components/trailer-image.tsx](src/components/trailer-image.tsx) đang vẽ SVG minh hoạ. Khi có ảnh chụp thật, thêm trường `images` vào `Product` và thay bằng `next/image`.
+- **Nhận yêu cầu báo giá**: [src/app/lien-he/actions.ts](src/app/lien-he/actions.ts) mới chỉ `console.info`. Cần nối email/CRM/database và thêm chống spam (rate limit hoặc captcha).
+- **SEO**: bổ sung `sitemap.ts`, `robots.ts`, Open Graph image và JSON-LD `Product` khi có domain thật.
