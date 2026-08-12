@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { products } from "@/data/catalog";
+import { getProductsByLine, lines } from "@/data/catalog";
 import { submitQuote, type QuoteState } from "./actions";
 
 const initialState: QuoteState = { status: "idle", message: "" };
@@ -79,10 +79,14 @@ export function QuoteForm({ defaultProduct }: { defaultProduct?: string }) {
           className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-amber-500"
         >
           <option value="">Chưa xác định / cần tư vấn</option>
-          {products.map((p) => (
-            <option key={p.slug} value={p.slug}>
-              {p.name}
-            </option>
+          {lines.map((line) => (
+            <optgroup key={line.slug} label={line.name}>
+              {getProductsByLine(line.slug).map((p) => (
+                <option key={p.slug} value={p.slug}>
+                  {p.name}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </select>
       </div>

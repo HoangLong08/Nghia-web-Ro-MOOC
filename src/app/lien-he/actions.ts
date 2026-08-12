@@ -1,6 +1,6 @@
 "use server";
 
-import { getProduct } from "@/data/catalog";
+import { findProductBySlug } from "@/data/catalog";
 
 export type QuoteState = {
   status: "idle" | "success" | "error";
@@ -34,7 +34,9 @@ export async function submitQuote(
     name,
     phone,
     note,
-    product: productSlug ? getProduct(productSlug)?.name ?? productSlug : null,
+    product: productSlug
+      ? findProductBySlug(productSlug)?.name ?? productSlug
+      : null,
   });
 
   return {

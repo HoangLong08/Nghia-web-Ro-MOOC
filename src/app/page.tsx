@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
-import { categories, products } from "@/data/catalog";
+import { getCategoriesByLine, getProductsByLine, lines, products } from "@/data/catalog";
+import { formatPostDate, posts } from "@/data/posts";
 import { site } from "@/data/site";
 
 const stats = [
@@ -24,13 +25,14 @@ const reasons = [
     body: "Liên kết ngân hàng, duyệt hồ sơ trong 48 giờ, thời hạn vay tới 5 năm.",
   },
   {
-    title: "Bảo hành tận nơi",
-    body: "Đội kỹ thuật lưu động xử lý sự cố cụm trục, phanh hơi và ty ben trên toàn quốc.",
+    title: "Phụ tùng và bảo hành tận nơi",
+    body: "Kho phụ tùng cụm trục, phanh hơi, ty ben sẵn hàng; đội kỹ thuật lưu động hỗ trợ dọc tuyến.",
   },
 ];
 
 export default function HomePage() {
   const featured = products.filter((p) => p.featured);
+  const latestPosts = [...posts].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
 
   return (
     <>
@@ -41,12 +43,12 @@ export default function HomePage() {
               {site.tagline}
             </p>
             <h1 className="mt-4 text-4xl font-bold leading-tight sm:text-5xl">
-              Sơ mi rơ moóc bền bỉ cho mọi tuyến hàng
+              Đầu kéo và sơ mi rơ moóc bền bỉ cho mọi tuyến hàng
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate-300">
-              Mooc sàn, xương, lửng, ben và bồn chuyên dụng từ Doosung, CIMC,
-              Tân Thanh. Tư vấn cấu hình theo đúng loại hàng và cung đường bạn
-              chạy.
+              Đầu kéo Mỹ, Trung Quốc, Nhật – Hàn cùng đầy đủ dòng mooc sàn,
+              xương, lửng, ben và bồn chuyên dụng. Tư vấn cấu hình theo đúng
+              loại hàng và cung đường bạn chạy.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -80,25 +82,42 @@ export default function HomePage() {
 
       <section className="mx-auto max-w-6xl px-4 py-16">
         <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
-          Danh mục sơ mi rơ moóc
+          Hai dòng sản phẩm chính
         </h2>
         <p className="mt-2 text-slate-600">
-          Chọn đúng loại thùng theo mặt hàng bạn chở.
+          Chọn dòng xe để xem toàn bộ cấu hình và giá tham khảo.
         </p>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.map((c) => (
-            <Link
-              key={c.slug}
-              href={`/san-pham?danh-muc=${c.slug}`}
-              className="group rounded-xl border border-slate-200 p-5 transition-colors hover:border-amber-400 hover:bg-amber-50"
+
+        <div className="mt-8 grid gap-6 md:grid-cols-2">
+          {lines.map((line) => (
+            <section
+              key={line.slug}
+              className="flex flex-col rounded-xl border border-slate-200 p-6"
             >
-              <h3 className="font-semibold text-slate-900 group-hover:text-amber-700">
-                {c.name}
-              </h3>
+              <h3 className="text-xl font-bold text-slate-900">{line.name}</h3>
               <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                {c.description}
+                {line.description}
               </p>
-            </Link>
+              <ul className="mt-4 flex flex-wrap gap-2">
+                {getCategoriesByLine(line.slug).map((c) => (
+                  <li key={c.slug}>
+                    <Link
+                      href={`${line.href}?danh-muc=${c.slug}`}
+                      className="inline-block rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600 transition-colors hover:border-amber-400 hover:text-amber-700"
+                    >
+                      {c.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href={line.href}
+                className="mt-6 inline-flex w-fit rounded-md bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
+              >
+                Xem {getProductsByLine(line.slug).length} xe{" "}
+                {line.shortName.toLowerCase()}
+              </Link>
+            </section>
           ))}
         </div>
       </section>
@@ -145,6 +164,45 @@ export default function HomePage() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="border-t border-slate-200 bg-slate-50">
+        <div className="mx-auto max-w-6xl px-4 py-16">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+              Kinh nghiệm cho nhà xe
+            </h2>
+            <Link
+              href="/blog"
+              className="text-sm font-semibold text-amber-600 hover:text-amber-700"
+            >
+              Xem tất cả bài viết →
+            </Link>
+          </div>
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            {latestPosts.map((post) => (
+              <article
+                key={post.slug}
+                className="flex flex-col rounded-xl border border-slate-200 bg-white p-5"
+              >
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                  {post.tag}
+                </p>
+                <h3 className="mt-2 font-semibold leading-snug text-slate-900">
+                  <Link href={`/blog/${post.slug}`} className="hover:text-amber-600">
+                    {post.title}
+                  </Link>
+                </h3>
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">
+                  {post.excerpt}
+                </p>
+                <p className="mt-4 text-xs text-slate-500">
+                  {formatPostDate(post.date)} · {post.readingMinutes} phút đọc
+                </p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 

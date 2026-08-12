@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { site } from "@/data/site";
 import { QuoteForm } from "./quote-form";
 
@@ -19,7 +20,9 @@ export default async function ContactPage({
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
-      <h1 className="text-3xl font-bold text-slate-900">Liên hệ & báo giá</h1>
+      <Breadcrumb items={[{ label: "Liên hệ" }]} />
+
+      <h1 className="mt-3 text-3xl font-bold text-slate-900">Liên hệ & báo giá</h1>
       <p className="mt-2 max-w-2xl text-slate-600">
         Để lại thông tin, đội kinh doanh sẽ gọi lại tư vấn cấu hình phù hợp với
         loại hàng và cung đường của bạn.

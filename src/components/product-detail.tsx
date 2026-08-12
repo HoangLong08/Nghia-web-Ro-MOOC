@@ -1,70 +1,37 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { ProductCard } from "@/components/product-card";
-import { TrailerImage } from "@/components/trailer-image";
-import { getCategory, getProduct, products } from "@/data/catalog";
+import { ProductImage } from "@/components/product-image";
+import { getCategory, getLine, getProductsByLine } from "@/data/catalog";
 import { site } from "@/data/site";
 import { formatPrice } from "@/lib/format";
+import type { Product } from "@/lib/types";
 
-type Params = { params: Promise<{ slug: string }> };
-
-export function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
-}
-
-export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const { slug } = await params;
-  const product = getProduct(slug);
-  if (!product) return { title: "Không tìm thấy xe" };
-  return {
-    title: product.name,
-    description: `${product.name} — ${product.axles} trục, tải trọng ${product.payload} tấn. ${formatPrice(product.price)}.`,
-  };
-}
-
-export default async function ProductDetailPage({ params }: Params) {
-  const { slug } = await params;
-  const product = getProduct(slug);
-  if (!product) notFound();
-
-  const category = getCategory(product.category);
-  const related = products
+export function ProductDetail({ product }: { product: Product }) {
+  const line = getLine(product.line);
+  const category = getCategory(product.line, product.category);
+  const related = getProductsByLine(product.line)
     .filter((p) => p.category === product.category && p.slug !== product.slug)
     .slice(0, 3);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
-      <nav className="text-sm text-slate-500">
-        <Link href="/" className="hover:text-slate-900">
-          Trang chủ
-        </Link>
-        <span className="mx-2">/</span>
-        <Link href="/san-pham" className="hover:text-slate-900">
-          Sản phẩm
-        </Link>
-        {category && (
-          <>
-            <span className="mx-2">/</span>
-            <Link
-              href={`/san-pham?danh-muc=${category.slug}`}
-              className="hover:text-slate-900"
-            >
-              {category.name}
-            </Link>
-          </>
-        )}
-      </nav>
+      <Breadcrumb
+        items={[
+          { label: "Sản phẩm", href: "/san-pham" },
+          ...(line ? [{ label: line.name, href: line.href }] : []),
+          ...(category && line
+            ? [{ label: category.name, href: `${line.href}?danh-muc=${category.slug}` }]
+            : []),
+          { label: product.name },
+        ]}
+      />
 
       <div className="mt-6 grid gap-10 lg:grid-cols-[1.2fr_1fr]">
-        <TrailerImage
-          category={product.category}
-          axles={product.axles}
-          className="aspect-[16/10] rounded-xl"
-        />
+        <ProductImage product={product} className="aspect-[16/10] rounded-xl" />
 
         <div>
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="rounded bg-slate-100 px-2 py-0.5 font-medium text-slate-600">
               {product.brand}
             </span>
@@ -113,10 +80,7 @@ export default async function ProductDetailPage({ params }: Params) {
             </Link>
           </div>
 
-          <p className="mt-6 text-sm text-slate-500">
-            Bảo hành: {product.warranty} · Kích thước lọt lòng:{" "}
-            {product.dimensions} mm
-          </p>
+          <p className="mt-6 text-sm text-slate-500">Bảo hành: {product.warranty}</p>
         </div>
       </div>
 

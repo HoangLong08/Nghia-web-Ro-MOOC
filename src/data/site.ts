@@ -1,6 +1,6 @@
 export const site = {
   name: "Trường Long Trailer",
-  tagline: "Sơ mi rơ moóc chính hãng — giao xe toàn quốc",
+  tagline: "Xe đầu kéo & sơ mi rơ moóc chính hãng — giao xe toàn quốc",
   hotline: "0909 123 456",
   hotlineHref: "tel:0909123456",
   zalo: "0909 123 456",
@@ -10,10 +10,24 @@ export const site = {
   taxCode: "3700000000",
 } as const;
 
-export const nav = [
+export type NavItem = {
+  href: string;
+  label: string;
+  children?: { href: string; label: string }[];
+};
+
+export const nav: NavItem[] = [
   { href: "/", label: "Trang chủ" },
-  { href: "/san-pham", label: "Sản phẩm" },
-  { href: "/dich-vu", label: "Dịch vụ" },
   { href: "/gioi-thieu", label: "Giới thiệu" },
+  {
+    href: "/san-pham",
+    label: "Sản phẩm",
+    children: [
+      { href: "/san-pham/xe-dau-keo", label: "Xe đầu kéo" },
+      { href: "/san-pham/so-mi-ro-mooc", label: "Sơ mi rơ moóc" },
+    ],
+  },
+  { href: "/phu-tung", label: "Phụ tùng" },
+  { href: "/blog", label: "Blog" },
   { href: "/lien-he", label: "Liên hệ" },
-] as const;
+];

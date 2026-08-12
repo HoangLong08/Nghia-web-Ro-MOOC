@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { categories } from "@/data/catalog";
+import { getCategoriesByLine, lines } from "@/data/catalog";
 import { site } from "@/data/site";
 
 export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-slate-800 bg-slate-900 text-slate-300">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <p className="text-lg font-semibold text-white">{site.name}</p>
           <p className="mt-2 text-sm leading-relaxed">{site.tagline}</p>
@@ -25,23 +25,25 @@ export function SiteFooter() {
           </dl>
         </div>
 
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-white">
-            Danh mục xe
-          </p>
-          <ul className="mt-4 space-y-2 text-sm">
-            {categories.map((c) => (
-              <li key={c.slug}>
-                <Link
-                  href={`/san-pham?danh-muc=${c.slug}`}
-                  className="hover:text-amber-400"
-                >
-                  {c.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {lines.map((line) => (
+          <div key={line.slug}>
+            <p className="text-sm font-semibold uppercase tracking-wide text-white">
+              {line.name}
+            </p>
+            <ul className="mt-4 space-y-2 text-sm">
+              {getCategoriesByLine(line.slug).map((c) => (
+                <li key={c.slug}>
+                  <Link
+                    href={`${line.href}?danh-muc=${c.slug}`}
+                    className="hover:text-amber-400"
+                  >
+                    {c.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
 
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-white">
@@ -61,6 +63,24 @@ export function SiteFooter() {
               </a>
             </li>
             <li>Zalo: {site.zalo}</li>
+          </ul>
+
+          <ul className="mt-6 space-y-2 text-sm">
+            <li>
+              <Link href="/phu-tung" className="hover:text-amber-400">
+                Phụ tùng
+              </Link>
+            </li>
+            <li>
+              <Link href="/blog" className="hover:text-amber-400">
+                Blog
+              </Link>
+            </li>
+            <li>
+              <Link href="/gioi-thieu" className="hover:text-amber-400">
+                Giới thiệu
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
